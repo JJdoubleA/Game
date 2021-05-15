@@ -11,23 +11,24 @@ import {
   PLAYER_WIDTH,
   PLAYER_START_X,
   PLAYER_START_Y,
-} from './constants';
-import { movePlayer } from './movement';
+} from './constants2';
+import { movePlayer } from './movement2';
 import { animateMovement } from './animation';
+import MyGame from './index'
 
 const player = {};
 const otherPlayer = {};
 let socket;
 let pressedKeys = [];
 
-class MyGame extends Phaser.Scene {
+export default class Lobby extends Phaser.Scene {
   constructor() {
-    super();
+    super("lobby");
   }
 
   preload() {
     socket = io('localhost:3000');
-    this.load.image('ship', shipImg);
+    this.load.image('lobby', lobbyimg);
     this.load.spritesheet('player', playerSprite, {
       frameWidth: PLAYER_SPRITE_WIDTH,
       frameHeight: PLAYER_SPRITE_HEIGHT,
@@ -39,7 +40,8 @@ class MyGame extends Phaser.Scene {
   }
 
   create() {
-    const ship = this.add.image(0, 0, 'ship');
+    this.socket = io();
+    const lobby = this.add.image(20, 10, 'lobby');
     player.sprite = this.add.sprite(PLAYER_START_X, PLAYER_START_Y, 'player');
     player.sprite.displayHeight = PLAYER_HEIGHT;
     player.sprite.displayWidth = PLAYER_WIDTH;
@@ -82,6 +84,22 @@ class MyGame extends Phaser.Scene {
       console.log('revieved moveend');
       otherPlayer.moving = false;
     });
+    var button = document.createElement("button");
+    button.innerHTML = "Game";
+
+    // 2. Append somewhere
+    var body = document.getElementsByTagName("body")[0];
+    body.appendChild(button);
+
+    // 3. Add event handler
+    button.addEventListener ("click", function() {
+      alert("did something");
+      gotolobby();
+    });
+    const gotolobby = () => {
+      this.scene.start('game')
+    }
+    
   }
 
   update() {
@@ -111,7 +129,7 @@ const config = {
   parent: 'phaser-example',
   width: 800,
   height: 450,
-  scene: MyGame,
+  scene: [Lobby,MyGame]
 };
 
-const game = new Phaser.Game(config);
+// export default Lobby
